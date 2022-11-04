@@ -7,7 +7,7 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 #include <time.h>
-
+#include <stdlib.h>
 
 const float FPS = 60;
 
@@ -89,6 +89,30 @@ typedef struct Estrelas {
 
 }Estrelas;
 
+
+typedef struct Conta {
+	int x;
+	int y;
+	int result;
+	int escolha;
+}Conta;
+
+void initConta(Conta *conta) {
+	conta->x = 0;
+	conta->y = 0;
+	conta->result = 0;
+	conta->escolha = 0;
+}
+
+void gerarNum(Conta* conta) {
+	conta->x = rand() % 10 + 1;
+	conta->y = rand() % 10 + 1;
+	conta->result = conta->x + conta->y;
+}
+
+
+
+
 //inicializacao da nave
 void initNave(Nave* nave) {
 
@@ -155,11 +179,6 @@ void update_enemy(Enemy* enemy) {
 	enemy->x += enemy->x_vel;
 	enemy->y += enemy->y_vel;
 
-	if (enemy->y + ENEMY_H > SCREEN_H - DMG_H) {
-		VIDA--;
-		enemy->x = 10;
-		enemy->y = 10;
-	}
 
 
 }
@@ -235,20 +254,30 @@ void DesenhaPlano_3(Estrelas estrelas_p3[], int tamanho) {
 void CometaColidido(Enemy *enemy, Nave *nave)
 {
 	float y_base = SCREEN_H - DMG_H;
+	Conta conta;
 
-	if (nave->x - NAVE_W / 3 < enemy->x &&
-		y_base - 120 < enemy->y &&
-		nave->x + NAVE_W / 3 > enemy->x + ENEMY_W &&
-		510 > enemy->y + ENEMY_H)
-	{
-		VIDA+=10;
-		enemy->x = 10;
+		if (nave->x - NAVE_W / 3 < enemy->x &&
+			y_base - 120 < enemy->y &&
+			nave->x + NAVE_W / 3 > enemy->x + ENEMY_W &&
+			510 > enemy->y + ENEMY_H)
+		{
+			VIDA += 10;
+			enemy->x = rand() % SCREEN_W;
+			enemy->y = 10;
+			gerarNum(&conta);
+	
+	}
+}
+void colisaoPiso(Enemy* enemy) {
+	Conta conta;
+	if (enemy->y + ENEMY_H > SCREEN_H - DMG_H) {
+		VIDA--;
+		enemy->x = rand() % SCREEN_W;
 		enemy->y = 10;
+		gerarNum(&conta);
 	}
 
 }
-
-
 
 int perdeu() {
 	if (VIDA == 0) {
@@ -259,7 +288,7 @@ int perdeu() {
 int main() {
 	enum IDS { ESTRELA };
 
-	srand(time(NULL));
+	
 	ALLEGRO_DISPLAY* display = NULL;
 	ALLEGRO_EVENT_QUEUE* event_queue = NULL;
 	ALLEGRO_TIMER* timer = NULL;
@@ -355,7 +384,9 @@ int main() {
 	Enemy enemy;
 	initEnemy(&enemy);
 
-
+	Conta conta;
+	initConta(&conta);
+	gerarNum(&conta);
 
 	ALLEGRO_FONT* fonte = al_load_font("arial.ttf", 20, NULL);
 	InitPlano_1(estrelas_p1, 100);
@@ -371,7 +402,7 @@ int main() {
 		al_wait_for_event(event_queue, &ev);
 
 		draw_scenario();
-
+		
 		AtualizarPlano_1(estrelas_p1, 100);
 		AtualizarPlano_2(estrelas_p2, 100);
 		AtualizarPlano_3(estrelas_p3, 100);
@@ -380,8 +411,12 @@ int main() {
 		DesenhaPlano_2(estrelas_p2, 100);
 		DesenhaPlano_1(estrelas_p1, 100);
 
-		CometaColidido(&enemy, &nave);
+		
+		if (conta.escolha == conta.result) {
+			CometaColidido(&enemy, &nave);
+		}
 
+		colisaoPiso(&enemy);
 
 		//FUNÇÕES INICIAIS
 
@@ -396,9 +431,12 @@ int main() {
 			draw_nave(nave, navezinha);
 			draw_enemy(enemy, meteoro);
 
+			srand(time(NULL));
 
+			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 140, 90, ALLEGRO_ALIGN_CENTRE, "NUMEROS: %d + %d = %d / %d", conta.x, conta.y, conta.result, conta.escolha);
 			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 40, 40, ALLEGRO_ALIGN_CENTRE, "Vidas: %d", VIDA);
 			playing = perdeu();
+		
 
 
 			//atualiza a tela (quando houver algo para mostrar)
@@ -422,6 +460,15 @@ int main() {
 
 			switch (ev.keyboard.keycode) {
 
+			case ALLEGRO_KEY_E:
+				conta.escolha = conta.result;
+				break;
+			case ALLEGRO_KEY_W:
+				conta.escolha = conta.x;
+				break;
+			case ALLEGRO_KEY_Q:
+				conta.escolha = conta.y;
+				break;
 			case ALLEGRO_KEY_A:
 				nave.esq = 1;
 				break;
