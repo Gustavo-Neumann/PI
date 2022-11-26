@@ -12,6 +12,7 @@
 const float FPS = 60;
 
 int VIDA = 3;
+int PONTOS = 0;
 
 const int SCREEN_W = 960;
 const int SCREEN_H = 540;
@@ -251,22 +252,15 @@ void DesenhaPlano_3(Estrelas estrelas_p3[], int tamanho) {
 }
 
 
-void CometaColidido(Enemy *enemy, Nave *nave)
-{
-	float y_base = SCREEN_H - DMG_H;
-	Conta conta;
-
-		if (nave->x - NAVE_W / 3 < enemy->x &&
-			y_base - 120 < enemy->y &&
-			nave->x + NAVE_W / 3 > enemy->x + ENEMY_W &&
-			510 > enemy->y + ENEMY_H)
-		{
-			VIDA += 10;
-			enemy->x = rand() % SCREEN_W;
-			enemy->y = 10;
-			gerarNum(&conta);
-	
+int CometaColidido(Enemy *enemy, Nave *nave){
+	if (nave->x - NAVE_W / 3 < enemy->x &&
+		SCREEN_H - DMG_H - 120 < enemy->y &&
+		nave->x + NAVE_W / 3 > enemy->x + ENEMY_W &&
+		510 > enemy->y + ENEMY_H)	{
+		return 1;
+		
 	}
+	return 0;
 }
 void colisaoPiso(Enemy* enemy) {
 	Conta conta;
@@ -274,7 +268,7 @@ void colisaoPiso(Enemy* enemy) {
 		VIDA--;
 		enemy->x = rand() % SCREEN_W;
 		enemy->y = 10;
-		gerarNum(&conta);
+		
 	}
 
 }
@@ -287,6 +281,13 @@ int perdeu() {
 
 int main() {
 	enum IDS { ESTRELA };
+
+	int gerarEscolha;
+	gerarEscolha = rand() % 3 + 1;
+	int gerarRand1, gerarRand2, gerarRand3;
+	gerarRand1 = rand() % 10 + 1;
+	gerarRand2 = rand() % 10 + 1;
+	gerarRand3 = rand() % 10 + 1;
 
 	
 	ALLEGRO_DISPLAY* display = NULL;
@@ -393,6 +394,7 @@ int main() {
 	InitPlano_2(estrelas_p2, 100);
 	InitPlano_3(estrelas_p3, 100);
 
+	
 
 	int playing = 1;
 	al_start_timer(timer);
@@ -400,6 +402,8 @@ int main() {
 		ALLEGRO_EVENT ev;
 		//espera por um evento e o armazena na variavel de evento ev
 		al_wait_for_event(event_queue, &ev);
+
+		srand(time(NULL));
 
 		draw_scenario();
 		
@@ -414,9 +418,25 @@ int main() {
 		
 		if (conta.escolha == conta.result) {
 			CometaColidido(&enemy, &nave);
+			
 		}
 
+
+		int gerar = CometaColidido(&enemy, &nave);;
+		if (gerar == 1) {
+			enemy.x = rand() % SCREEN_W;
+			enemy.y = 10;
+			gerarNum(&conta);
+			gerarEscolha = rand() % 3 + 1;
+			gerarRand1 = rand() % 10 + 1;
+			gerarRand2 = rand() % 10 + 1;
+			gerarRand3 = rand() % 10 + 1;
+			PONTOS += 100;
+			conta.escolha = 0;
+		}
 		colisaoPiso(&enemy);
+
+
 
 		//FUNÇÕES INICIAIS
 
@@ -431,10 +451,37 @@ int main() {
 			draw_nave(nave, navezinha);
 			draw_enemy(enemy, meteoro);
 
-			srand(time(NULL));
+	
 
-			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 140, 90, ALLEGRO_ALIGN_CENTRE, "NUMEROS: %d + %d = %d / %d", conta.x, conta.y, conta.result, conta.escolha);
-			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 40, 40, ALLEGRO_ALIGN_CENTRE, "Vidas: %d", VIDA);
+
+
+			int keyQ = 0, keyW = 0, keyE = 0;
+
+
+		
+
+			if (gerarEscolha == 1)
+				keyQ = conta.result;
+			else
+				keyQ = gerarRand1;
+			if (gerarEscolha == 2)
+				keyW = conta.result;
+			else
+				keyW = gerarRand2;
+			if (gerarEscolha == 3)
+				keyE = conta.result;
+			else
+				keyE = gerarRand3;
+	
+
+			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2 + 50, 10, ALLEGRO_ALIGN_CENTRE, "%d", conta.escolha);
+			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2, 10, ALLEGRO_ALIGN_CENTRE, "%d + %d = ", conta.x, conta.y);
+			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 900, 510, ALLEGRO_ALIGN_CENTRE,"Q = %d", keyQ);
+			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2 , 510, ALLEGRO_ALIGN_CENTRE, "W = %d", keyW);
+			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 60, 510, ALLEGRO_ALIGN_CENTRE, "E = %d", keyE);
+
+			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 60, 30, ALLEGRO_ALIGN_CENTRE, "Vidas: %d", VIDA);
+			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 60, 10, ALLEGRO_ALIGN_CENTRE, "Pontos: %d", PONTOS);
 			playing = perdeu();
 		
 
@@ -460,14 +507,23 @@ int main() {
 
 			switch (ev.keyboard.keycode) {
 
-			case ALLEGRO_KEY_E:
-				conta.escolha = conta.result;
+			case ALLEGRO_KEY_Q:
+				if (gerarEscolha == 1)
+					conta.escolha = conta.result;
+				else
+					conta.escolha = gerarRand1;
 				break;
 			case ALLEGRO_KEY_W:
-				conta.escolha = conta.x;
+				if (gerarEscolha == 2)
+					conta.escolha = conta.result;
+				else
+					conta.escolha = gerarRand2;
 				break;
-			case ALLEGRO_KEY_Q:
-				conta.escolha = conta.y;
+			case ALLEGRO_KEY_E:
+				if(gerarEscolha == 3)
+					conta.escolha = conta.result;
+				else
+					conta.escolha = gerarRand3;
 				break;
 			case ALLEGRO_KEY_A:
 				nave.esq = 1;
