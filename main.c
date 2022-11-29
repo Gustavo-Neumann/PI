@@ -17,6 +17,8 @@ int PONTOS = 0;
 const int SCREEN_W = 960;
 const int SCREEN_H = 540;
 
+
+
 const int NAVE_W = 100;
 const int NAVE_Y = 50;
 
@@ -51,6 +53,8 @@ void draw_scenario() {
 		al_map_rgb(0, 0, 0));
 
 }
+
+
 
 
 //struct do projetil 
@@ -275,7 +279,7 @@ void colisaoPiso(Enemy* enemy) {
 
 int perdeu() {
 	if (VIDA == 0) {
-		return 0;
+		return 3;
 	}
 }
 
@@ -389,16 +393,55 @@ int main() {
 	initConta(&conta);
 	gerarNum(&conta);
 
-	ALLEGRO_FONT* fonte = al_load_font("arial.ttf", 20, NULL);
+	ALLEGRO_FONT* fonte = al_load_font("Minecraft.ttf", 25, NULL);
 	InitPlano_1(estrelas_p1, 100);
 	InitPlano_2(estrelas_p2, 100);
 	InitPlano_3(estrelas_p3, 100);
 
-	
-
-	int playing = 1;
+jogo:
+	PONTOS = 0;
+	VIDA = 3;
+	int playing = 2;
 	al_start_timer(timer);
-	while (playing) {
+	while (playing == 2) {
+		ALLEGRO_EVENT ev;
+
+	
+	al_wait_for_event(event_queue, &ev);
+
+	draw_scenario();
+
+	al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2 - 20, SCREEN_H / 2 - 100, ALLEGRO_ALIGN_CENTRE, "TELESTIA");
+	al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2 - 20, SCREEN_H / 2 - 50, ALLEGRO_ALIGN_CENTRE, "APERTE ENTER PARA JOGAR");
+
+	AtualizarPlano_1(estrelas_p1, 100);
+	AtualizarPlano_2(estrelas_p2, 100);
+	AtualizarPlano_3(estrelas_p3, 100);
+
+	DesenhaPlano_3(estrelas_p3, 100);
+	DesenhaPlano_2(estrelas_p2, 100);
+	DesenhaPlano_1(estrelas_p1, 100);
+
+	al_flip_display();
+
+
+		switch (ev.keyboard.keycode) {
+
+		case ALLEGRO_KEY_ESCAPE:
+			playing = 0;
+			break;
+		case ALLEGRO_KEY_ENTER:
+			playing = 1;
+			break;
+		}
+
+	if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+		playing = 0;
+	}
+
+	}
+
+	while (playing == 1) {
 		ALLEGRO_EVENT ev;
 		//espera por um evento e o armazena na variavel de evento ev
 		al_wait_for_event(event_queue, &ev);
@@ -415,6 +458,7 @@ int main() {
 		DesenhaPlano_2(estrelas_p2, 100);
 		DesenhaPlano_1(estrelas_p1, 100);
 
+
 		
 		if (conta.escolha == conta.result) {
 			CometaColidido(&enemy, &nave);
@@ -424,6 +468,7 @@ int main() {
 
 		int gerar = CometaColidido(&enemy, &nave);;
 		if (gerar == 1) {
+			enemy.x_vel += 0.06;
 			enemy.x = rand() % SCREEN_W;
 			enemy.y = 10;
 			gerarNum(&conta);
@@ -435,6 +480,16 @@ int main() {
 			conta.escolha = 0;
 		}
 		colisaoPiso(&enemy);
+
+		if (enemy.x + ENEMY_W > SCREEN_W) {
+			enemy.x = rand() % SCREEN_W;
+		}
+
+		if (enemy.x < 0) {
+			enemy.x = rand() % SCREEN_W;
+		}
+
+
 
 
 
@@ -457,7 +512,6 @@ int main() {
 
 			int keyQ = 0, keyW = 0, keyE = 0;
 
-
 		
 
 			if (gerarEscolha == 1)
@@ -474,14 +528,14 @@ int main() {
 				keyE = gerarRand3;
 	
 
-			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2 + 50, 10, ALLEGRO_ALIGN_CENTRE, "%d", conta.escolha);
+			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2 + 60, 10, ALLEGRO_ALIGN_CENTRE, "%d", conta.escolha);
 			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2, 10, ALLEGRO_ALIGN_CENTRE, "%d + %d = ", conta.x, conta.y);
 			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 900, 510, ALLEGRO_ALIGN_CENTRE,"Q = %d", keyQ);
 			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2 , 510, ALLEGRO_ALIGN_CENTRE, "W = %d", keyW);
 			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 60, 510, ALLEGRO_ALIGN_CENTRE, "E = %d", keyE);
 
-			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 60, 30, ALLEGRO_ALIGN_CENTRE, "Vidas: %d", VIDA);
-			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 60, 10, ALLEGRO_ALIGN_CENTRE, "Pontos: %d", PONTOS);
+			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 70, 30, ALLEGRO_ALIGN_CENTRE, "Vidas: %d", VIDA);
+			al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W - 70, 10, ALLEGRO_ALIGN_CENTRE, "Pontos: %d", PONTOS);
 			playing = perdeu();
 		
 
@@ -555,6 +609,44 @@ int main() {
 
 
 	}//fim do while
+
+	while (playing == 3) {
+		ALLEGRO_EVENT ev;
+
+
+		al_wait_for_event(event_queue, &ev);
+
+		draw_scenario();
+
+		al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2 - 20, SCREEN_H / 2 - 100, ALLEGRO_ALIGN_CENTRE, "VOCE PERDEU");
+		al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2 - 20, SCREEN_H / 2 - 50, ALLEGRO_ALIGN_CENTRE, "APERTE ENTER PARA JOGAR NOVAMENTE");
+		al_draw_textf(fonte, al_map_rgb(255, 0, 0), SCREEN_W / 2 - 20, SCREEN_H / 2 - 20, ALLEGRO_ALIGN_CENTRE, "APERTE ESQ PARA SAIR");
+
+		AtualizarPlano_1(estrelas_p1, 100);
+		AtualizarPlano_2(estrelas_p2, 100);
+		AtualizarPlano_3(estrelas_p3, 100);
+
+		DesenhaPlano_3(estrelas_p3, 100);
+		DesenhaPlano_2(estrelas_p2, 100);
+		DesenhaPlano_1(estrelas_p1, 100);
+
+		al_flip_display();
+
+
+		switch (ev.keyboard.keycode) {
+
+		case ALLEGRO_KEY_ESCAPE:
+			playing = 0;
+			break;
+		case ALLEGRO_KEY_ENTER:
+			goto jogo;
+			break;
+		}
+
+		if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+			playing = 0;
+		}
+	}
 
 
 

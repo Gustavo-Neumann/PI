@@ -1,9 +1,9 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(534,5): warning MSB8028: O diretório intermediário (x64\Debug\) contém arquivos compartilhados de outro projeto (Project1.vcxproj). Isso pode levar a um comportamento incorreto de limpeza e recompilação.
   main.c
-C:\Users\Gusta\source\repos\pi\pi\main.c(144,71): warning C4020: 'al_draw_bitmap': muitos parâmetros reais
-C:\Users\Gusta\source\repos\pi\pi\main.c(156,60): warning C4020: 'al_draw_bitmap': muitos parâmetros reais
-C:\Users\Gusta\source\repos\pi\pi\main.c(266,8): warning C4101: 'conta': variável local não referenciada
-C:\Users\Gusta\source\repos\pi\pi\main.c(392,58): warning C4047: 'função': 'int' difere em níveis de indireção de 'void *'
-C:\Users\Gusta\source\repos\pi\pi\main.c(392,54): warning C4024: 'al_load_font': tipos diferentes para parâmetro formal e real 3
-C:\Users\Gusta\source\repos\pi\pi\main.c(280): warning C4715: 'perdeu': nem todos os caminhos de controle retornam um valor
+C:\Users\Gusta\source\repos\pi\pi\main.c(148,71): warning C4020: 'al_draw_bitmap': muitos parâmetros reais
+C:\Users\Gusta\source\repos\pi\pi\main.c(160,60): warning C4020: 'al_draw_bitmap': muitos parâmetros reais
+C:\Users\Gusta\source\repos\pi\pi\main.c(270,8): warning C4101: 'conta': variável local não referenciada
+C:\Users\Gusta\source\repos\pi\pi\main.c(396,62): warning C4047: 'função': 'int' difere em níveis de indireção de 'void *'
+C:\Users\Gusta\source\repos\pi\pi\main.c(396,58): warning C4024: 'al_load_font': tipos diferentes para parâmetro formal e real 3
+C:\Users\Gusta\source\repos\pi\pi\main.c(284): warning C4715: 'perdeu': nem todos os caminhos de controle retornam um valor
   pi.vcxproj -> C:\Users\Gusta\source\repos\pi\x64\Debug\pi.exe
