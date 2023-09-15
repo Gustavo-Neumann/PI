@@ -1,1 +1,2 @@
 # PiTelestia2
+Este projeto é um jogo educacional desenvolvido em linguagem C, utilizando a biblioteca Allegro para gráficos e interatividade. O Allegro proporciona recursos para criar a interface gráfica do jogo, lidar com entradas do usuário e manipular elementos visuais. O jogo educacional tem como objetivo ensinar conceitos de forma interativa, incorporando desafios e elementos educativos. A lógica do jogo é implementada em C, e os recursos gráficos são gerenciados pela Allegro para proporcionar uma experiência de aprendizado envolvente e interativa.
